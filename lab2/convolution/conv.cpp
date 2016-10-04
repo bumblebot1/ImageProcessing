@@ -16,13 +16,12 @@ int main() {
             mask.at<uchar>(a,b) = 1;
         }
     }
-    // Threshold by looping through all pixels
     for(int y = 1; y < image.rows - 1; y++) {
         for(int x = 1; x < image.cols - 1; x++) {
             int pixel = 0;
             for(int i = -1; i <= 1 ; i++) {
                 for(int j = -1; j<= 1; j++) {
-                    pixel += image.at<uchar>(y-i, x-j) * mask.at<uchar>(i,j);
+                    pixel += image.at<uchar>(y-i, x-j) * mask.at<uchar>(i+1,j+1);
                 }
             }
             result.at<uchar>(y,x) = pixel/9;
