@@ -22,18 +22,18 @@ int main( int argc, char** argv )
 
  Mat recovered = Mat(image.rows, image.cols, CV_8UC1);
 
- //nicest way to do it in one line cv::medianBlur(image, recovered, 3);
+ //nicest way to do it in one line cv::medianBlur(image, recovered, 5);
 
- for(int x = 1; x < image.rows; x++) {
-   for(int y = 1; y < image.cols; y++) {
+ for(int x = 2; x < image.rows-2; x++) {
+   for(int y = 2; y < image.cols-2; y++) {
      std::vector<uchar> vec;
-     for(int i = -1; i <= 1; i++) {
-       for(int j = -1; j <= 1; j++) {
+     for(int i = -2; i <= 2; i++) {
+       for(int j = -2; j <= 2; j++) {
          vec.push_back(image.at<uchar>(x+i, y+j));
        }
      }
      std::sort(vec.begin(), vec.end());
-     recovered.at<uchar>(x,y) = vec[4];
+     recovered.at<uchar>(x,y) = vec[12];
    }
  }
 
