@@ -16,15 +16,16 @@ int main() {
             mask.at<uchar>(a,b) = 1;
         }
     }
-    for(int y = 1; y < image.rows - 1; y++) {
-        for(int x = 1; x < image.cols - 1; x++) {
+
+    for(int x = 1; x < image.rows - 1; x++) {
+        for(int y = 1; y < image.cols - 1; y++) {
             int pixel = 0;
             for(int i = -1; i <= 1 ; i++) {
                 for(int j = -1; j<= 1; j++) {
-                    pixel += image.at<uchar>(y-i, x-j) * mask.at<uchar>(i+1,j+1);
+                    pixel += image.at<uchar>(x-i, y-j) * mask.at<uchar>(i+1,j+1);
                 }
             }
-            result.at<uchar>(y,x) = pixel/9;
+            result.at<uchar>(x,y) = pixel / 9;
         }
     }
 

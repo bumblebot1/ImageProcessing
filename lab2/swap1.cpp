@@ -14,10 +14,10 @@ int main() {
       for(int x=0; x<image.rows; x++) {
           uchar pixelBlue = image.at<Vec3b>(y,x)[0];
           uchar pixelGreen = image.at<Vec3b>(y,x)[1];
-          uchar pixelRed = image.at<Vec3b>((y-32)%255,(x-32)%255)[2];
+          uchar pixelRed = image.at<Vec3b>(y,x)[2];
           image2.at<Vec3b>(y,x)[0] = pixelBlue;
           image2.at<Vec3b>(y,x)[1] = pixelGreen;
-          image2.at<Vec3b>(y,x)[2] = pixelRed;
+          image2.at<Vec3b>((y+30+image.rows)%image.rows,(x+30+image.rows)%image.rows)[2] = pixelRed;
       }
   }
   //Save thresholded image
