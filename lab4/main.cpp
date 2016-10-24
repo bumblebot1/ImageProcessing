@@ -1,5 +1,6 @@
 // header inclusion
 #include <stdio.h>
+#include <cmath>
 #include <opencv/cv.h>        //you may need to
 #include <opencv/highgui.h>   //adjust import locations
 #include <opencv/cxcore.h>    //depending on your machine setup
@@ -8,6 +9,9 @@
 using namespace cv;
 Mat convolution(Mat original, Mat mask);
 void sobelCV(Mat image);
+Mat magnitude(Mat grad_x, Mat grad_y);
+Mat normalise(Mat src);
+Mat gradient_direction(Mat grad_x, Mat grad_y);
 
 int main( int argc, char** argv )
 {
@@ -48,33 +52,38 @@ int main( int argc, char** argv )
 
  //sobelCV(image);
 // imshow("Gradient X", convolution(image,maskDx));
- imshow("Gradient Y", convolution(image, maskDy));
+ Mat grad_x = convolution(image, maskDx);
+ imshow("Gradient X", normalise(grad_x));
+ Mat grad_y = convolution(image, maskDy);
+ imshow("Gradient Y", normalise(grad_y));
+
+ imshow("Magnitude", normalise(magnitude(grad_x, grad_y)));
+
+ imshow("Phase", normalise(gradient_direction(grad_x, grad_y)));
  waitKey(0);
  return 0;
 }
 
 Mat convolution(Mat image, Mat mask){
-  Mat grad = Mat(image.rows, image.cols, CV_32SC1);
-  Mat result = Mat(image.rows, image.cols, CV_8UC1);
+  Mat grad = Mat(image.rows, image.cols, CV_32FC1);
   for(int x = 1; x < image.rows - 1; x++) {
       for(int y = 1; y < image.cols - 1; y++) {
-          int pixel = 0;
+          float pixel = 0;
           for(int i = -1; i <= 1 ; i++) {
               for(int j = -1; j<= 1; j++) {
                   pixel += image.at<uchar>(x-i, y-j) * mask.at<char>(i+1,j+1);
               }
           }
-          grad.at<int>(x,y) = pixel;
+          grad.at<float>(x,y) = pixel;
       }
   }
-  double minVal, maxVal;
-  cv::minMaxLoc(grad, &minVal, &maxVal);
-  for(int x = 1; x < image.rows - 1; x++) {
-      for(int y = 1; y < image.cols - 1; y++) {
-        result.at<char>(x,y) = (grad.at<int>(x,y) - minVal) *255 /(maxVal-minVal);
-      }
-  }
-  return result;
+  return grad;
+}
+
+Mat normalise(Mat src){
+  Mat dst;
+  normalize(src, dst, 0.0, 255.0, cv::NORM_MINMAX, CV_8U);
+  return dst;
 }
 
 void sobelCV(Mat image){
@@ -96,3 +105,27 @@ void sobelCV(Mat image){
   imshow("Gradient Y", draw_y);
   waitKey(0);
 }
+
+Mat magnitude(Mat grad_x, Mat grad_y){
+  Mat result = Mat(grad_x.rows, grad_x.cols, CV_32FC1);
+  for(int x = 0; x < grad_x.rows; x++){
+    for(int y = 0; y < grad_y.cols; y++){
+      float i = grad_x.at<float>(x,y);
+      float j = grad_y.at<float>(x,y);
+      result.at<float>(x,y) = std::floor(std::sqrt(i*i + j*j));
+    }
+  }
+  return result;
+}
+
+Mat gradient_direction(Mat grad_x, Mat grad_y) {
+  Mat result = Mat(grad_x.rows, grad_x.cols, CV_32FC1);
+  for(int x = 0; x < grad_x.rows; x++){
+    for(int y = 0; y < grad_y.cols; y++){
+      float i = grad_x.at<float>(x,y);
+      float j = grad_y.at<float>(x,y);
+      result.at<float>(x,y) = std::atan2(j,i);
+     }
+   }
+   return result;
+ }
