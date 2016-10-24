@@ -12,6 +12,7 @@ void sobelCV(Mat image);
 Mat magnitude(Mat grad_x, Mat grad_y);
 Mat normalise(Mat src);
 Mat gradient_direction(Mat grad_x, Mat grad_y);
+Mat threshold(Mat original);
 
 int main( int argc, char** argv )
 {
@@ -57,9 +58,13 @@ int main( int argc, char** argv )
  Mat grad_y = convolution(image, maskDy);
  imshow("Gradient Y", normalise(grad_y));
 
- imshow("Magnitude", normalise(magnitude(grad_x, grad_y)));
+ Mat mag = magnitude(grad_x, grad_y);
+ imshow("Magnitude", normalise(mag));
 
- imshow("Phase", normalise(gradient_direction(grad_x, grad_y)));
+ Mat dir = gradient_direction(grad_x, grad_y);
+ imshow("Phase", normalise(dir));
+
+ imshow("thresholded", threshold(normalise(magnitude(grad_x,grad_y))));
  waitKey(0);
  return 0;
 }
@@ -125,6 +130,19 @@ Mat gradient_direction(Mat grad_x, Mat grad_y) {
       float i = grad_x.at<float>(x,y);
       float j = grad_y.at<float>(x,y);
       result.at<float>(x,y) = std::atan2(j,i);
+     }
+   }
+   return result;
+ }
+
+Mat threshold(Mat original){
+   Mat result = Mat(original.rows, original.cols, CV_8UC1);
+   for(int x = 0; x < original.rows; x++){
+     for(int y = 0; y < original.cols; y++){
+       if(original.at<uchar>(x,y) > 128)
+          result.at<uchar>(x,y) = 255;
+       else
+          result.at<uchar>(x,y) = 0;
      }
    }
    return result;
