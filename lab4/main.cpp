@@ -13,7 +13,7 @@ Mat magnitude(Mat grad_x, Mat grad_y);
 Mat normalise(Mat src);
 Mat gradient_direction(Mat grad_x, Mat grad_y);
 Mat threshold(Mat original);
-void hough(Mat magnitude, Mat orientation, int r, int Th);
+void hough(Mat magnitude, Mat orientation, int minRadius, int maxRadius, int Th);
 
 int main( int argc, char** argv )
 {
@@ -65,11 +65,56 @@ int main( int argc, char** argv )
  Mat dir = gradient_direction(grad_x, grad_y);
  imshow("Phase", normalise(dir));
 
- imshow("thresholded", threshold(normalise(magnitude(grad_x,grad_y))));
-
- hough(threshold(normalise(mag)), normalise(dir), 2, 5);
+ Mat thresholded = threshold(normalise(mag));
+ imshow("Thresholded",thresholded);
+ hough(threshold(normalise(mag)), dir, 20, 100, 10);
  waitKey(0);
  return 0;
+}
+
+void hough(Mat magnitude, Mat orientation, int minRadius, int maxRadius, int Th){
+  int dims[] = {magnitude.rows, magnitude.cols, maxRadius-minRadius +1};
+  Mat H(3, dims, CV_32FC1, Scalar::all(0));
+
+  for(int x = 0; x < magnitude.rows; x++){
+    for(int y = 0; y < magnitude.cols; y++){
+      if(magnitude.at<uchar>(x,y) == 255){
+        for(int k = minRadius; k < maxRadius; k++){
+          int x0 = x + k*std::sin(orientation.at<float>(x,y));
+          int y0 = y + k*std::cos(orientation.at<float>(x,y));
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.rows && y0 < magnitude.cols)
+            H.at<float>(x0,y0,k-minRadius)++;
+
+          x0 = x - k*std::sin(orientation.at<float>(x,y));
+          y0 = y - k*std::cos(orientation.at<float>(x,y));
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.rows && y0 < magnitude.cols)
+            H.at<float>(x0,y0,k-minRadius)++;
+        }
+      }
+    }
+  }
+
+
+  Mat houghSpace = Mat(magnitude.rows, magnitude.cols, CV_64FC1);
+  for(int x = 0; x < magnitude.rows; x++){
+    for(int y = 0; y < magnitude.cols; y++){
+      houghSpace.at<double>(x,y) = 0;
+      for(int k = minRadius; k < maxRadius; k++){
+        houghSpace.at<double>(x,y) += H.at<float>(x,y,k-minRadius);
+      }
+    }
+  }
+
+  cv::imshow("HoughSpace", normalise(houghSpace));
+  // for(int x = 0; x < magnitude.rows; x++){
+  //   for(int y = 0; y < magnitude.cols; y++){
+  //     for(int k = 0; k < r; k++){
+  //       //std::cout<<H[x][y][k];
+  //       if(H[x][y][k] > Th)
+  //         std::cout<<x<<" "<<y<<" "<<k<<"\n";
+  //     }
+  //   }
+  // }
 }
 
 Mat convolution(Mat image, Mat mask){
@@ -111,8 +156,15 @@ void sobelCV(Mat image){
   imshow("Original", image);
   imshow("Gradient X", draw_x);
   imshow("Gradient Y", draw_y);
+  Mat mag = magnitude(grad_x, grad_y);
+  imshow("magnitude", normalise(mag));
+  Mat phase = gradient_direction(grad_x, grad_y);
+  imshow("phase", normalise(phase));
   waitKey(0);
 }
+
+
+
 
 Mat magnitude(Mat grad_x, Mat grad_y){
   Mat result = Mat(grad_x.rows, grad_x.cols, CV_32FC1);
@@ -142,57 +194,11 @@ Mat threshold(Mat original){
  Mat result = Mat(original.rows, original.cols, CV_8UC1);
  for(int x = 0; x < original.rows; x++){
    for(int y = 0; y < original.cols; y++){
-     if(original.at<uchar>(x,y) > 128)
+     if(original.at<uchar>(x,y) > 50)
         result.at<uchar>(x,y) = 255;
      else
         result.at<uchar>(x,y) = 0;
    }
  }
  return result;
-}
-
-void hough(Mat magnitude, Mat orientation, int r, int Th){
-  int H[magnitude.rows][magnitude.cols][r];
-  for(int i = 0; i < magnitude.rows; i++){
-    for(int j = 0; j < magnitude.cols; j++){
-      for(int k = 0; k < r; k++){
-        H[i][j][k] = 0;
-      }
-    }
-  }
-
-  for(int x = 0; x < magnitude.rows; x++){
-    for(int y = 0; y < magnitude.cols; y++){
-      if(magnitude.at<uchar>(x,y) == 255){
-        for(int k = 0; k < r; k++){
-          int x0 = x + k*std::cos(orientation.at<uchar>(x,y));
-          int y0 = y + k*std::sin(orientation.at<uchar>(x,y));
-          H[x0][y0][k]++;
-
-          x0 = x - k*std::cos(orientation.at<uchar>(x,y));
-          y0 = y + k*std::sin(orientation.at<uchar>(x,y));
-          H[x0][y0][k]++;
-
-          x0 = x + k*std::cos(orientation.at<uchar>(x,y));
-          y0 = y - k*std::sin(orientation.at<uchar>(x,y));
-          H[x0][y0][k]++;
-
-          x0 = x - k*std::cos(orientation.at<uchar>(x,y));
-          y0 = y - k*std::sin(orientation.at<uchar>(x,y));
-          H[x0][y0][k]++;
-        }
-      }
-    }
-  }
-
-  for(int x = 0; x < magnitude.rows; x++){
-    for(int y = 0; y < magnitude.cols; y++){
-      for(int k = 0; k < r; k++){
-        //std::cout<<H[x][y][k];
-        if(H[x][y][k] > Th)
-          std::cout<<x<<" "<<y<<" "<<k<<"\n";
-      }
-    }
-  }
-
 }
