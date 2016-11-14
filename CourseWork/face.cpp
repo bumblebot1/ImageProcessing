@@ -14,6 +14,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 #include <stdio.h>
+#include <accuracyMeasurement.h>
 
 using namespace std;
 using namespace cv;
@@ -60,10 +61,39 @@ void detectAndDisplay( Mat frame )
        // 3. Print number of Faces found
 	std::cout << faces.size() << std::endl;
 
+  vector<Rectangle> groundTruth = readFile("groundTruth/image8.txt");
        // 4. Draw box around faces found
 	for( int i = 0; i < faces.size(); i++ )
 	{
+    Point p0 = Point(faces[i].x, faces[i].y);
+    Point p1 = Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height);
 		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
+    rectangle(frame, groundTruth[0].top, groundTruth[0].bottom, Scalar(0,0,255),2 );
+    Rectangle rect;
+    rect.top = p0;
+    rect.bottom = p1;
+    int result = is_TP(groundTruth[0], rect);
+    printf("%d result\n",result);
+    if(result){
+      rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height),  Scalar( 102, 255, 255 ), 2);
+      cout<<rect.top<<" "<<rect.bottom;
+    }
 	}
+
+  for( int i = 0; i < faces.size(); i++ )
+  {
+    Point p0 = Point(faces[i].x, faces[i].y);
+    Point p1 = Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height);
+    rectangle(frame, groundTruth[1].top, groundTruth[1].bottom, Scalar(0,0,255),2 );
+    Rectangle rect;
+    rect.top = p0;
+    rect.bottom = p1;
+    int result = is_TP(groundTruth[1], rect);
+    printf("%d result\n",result);
+    if(result){
+      rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 102, 255, 255 ), 2);
+      cout<<rect.top<<" "<<rect.bottom;
+    }
+  }
 
 }

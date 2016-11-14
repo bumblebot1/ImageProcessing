@@ -20,7 +20,7 @@ int is_TP(Rectangle groundTruth, Rectangle detected)
 	resultTL.y = max(detected.top.y, groundTruth.top.y);
 
 	resultBR.x = min(detected.bottom.x, groundTruth.bottom.x);
-	resultBR.y = max(detected.bottom.y, groundTruth.bottom.y);
+	resultBR.y = min(detected.bottom.y, groundTruth.bottom.y);
 
 	double groundTruthArea =  (groundTruth.bottom.y - groundTruth.top.y)*(groundTruth.bottom.x - groundTruth.top.x);
 	double resultArea 	   =  (resultBR.y - resultTL.y)*(resultBR.x - resultTL.x);
