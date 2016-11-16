@@ -33,13 +33,8 @@ String groundTruthPath = "groundTruth/";
 int main( int argc, const char** argv )
 {
   stringstream testStream;
-  testStream<<imagesPath<<"dart"<<argv[1]<<".jpg";
-
-  stringstream groundTruthStream;
-  groundTruthStream<<groundTruthPath<<"image"<<argv[1]<<".txt";
-
+  testStream<<imagesPath<<argv[1];
   String testImage = testStream.str();
-  String groundTruthImage = groundTruthStream.str();
 
   // 1. Read Input Image
   Mat frame = imread(testImage, CV_LOAD_IMAGE_COLOR);
@@ -49,7 +44,14 @@ int main( int argc, const char** argv )
 
   // 3. Detect Faces and Display Result
   vector<Rect> detections = detectAndDisplay( frame );
-  verifyDetections(frame, detections, groundTruthImage);
+
+  if(argc > 2){
+    stringstream groundTruthStream;
+    groundTruthStream<<groundTruthPath<<argv[2];
+    String groundTruthImage = groundTruthStream.str();
+
+    verifyDetections(frame, detections, groundTruthImage);
+  }
 
   // 4. Save Result Image
   imwrite( "detected.jpg", frame );

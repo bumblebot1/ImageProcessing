@@ -31,11 +31,11 @@ bool is_TP(Rectangle groundTruth, Rectangle detected)
     || max(detected.top.y, groundTruth.top.y) > min(detected.bottom.y, groundTruth.bottom.y) )
     return false;
 
-  cout<<"Detection Area:"<<detectedArea<<" Ground Truth Area:"<<groundTruthArea;
+  cout<<"Detection Area:"<<detectedArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
   if(detectedArea >= groundTruthArea * 2)
     return false;
 
-  cout<<" Intersection Area:"<<resultArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
+  cout<<"Intersection Area:"<<resultArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
   if ( resultArea * 2 >= groundTruthArea )
     return true;
 
