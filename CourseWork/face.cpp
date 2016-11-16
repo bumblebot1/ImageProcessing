@@ -21,6 +21,7 @@ using namespace cv;
 
 /** Function Headers */
 void detectAndDisplay( Mat frame );
+void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth);
 
 /** Global variables */
 String cascade_name = "dartcascade/cascade.xml";
@@ -62,29 +63,20 @@ void detectAndDisplay( Mat frame )
 	std::cout << faces.size() << std::endl;
 
   vector<Rectangle> groundTruth = readFile("groundTruth/image8.txt");
-       // 4. Draw box around faces found
+  drawGroundTruth(frame,groundTruth);
+
+  // 4. Draw box around faces found
 	for( int i = 0; i < faces.size(); i++ )
 	{
     Point p0 = Point(faces[i].x, faces[i].y);
     Point p1 = Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height);
 		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
-    rectangle(frame, groundTruth[0].top, groundTruth[0].bottom, Scalar(0,0,255),2 );
-    Rectangle rect;
-    rect.top = p0;
-    rect.bottom = p1;
-    int result = is_TP(groundTruth[0], rect);
-    printf("%d result\n",result);
-    if(result){
-      rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height),  Scalar( 102, 255, 255 ), 2);
-      cout<<rect.top<<" "<<rect.bottom;
-    }
 	}
 
-  for( int i = 0; i < faces.size(); i++ )
+/*  for( int i = 0; i < faces.size(); i++ )
   {
     Point p0 = Point(faces[i].x, faces[i].y);
     Point p1 = Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height);
-    rectangle(frame, groundTruth[1].top, groundTruth[1].bottom, Scalar(0,0,255),2 );
     Rectangle rect;
     rect.top = p0;
     rect.bottom = p1;
@@ -95,5 +87,12 @@ void detectAndDisplay( Mat frame )
       cout<<rect.top<<" "<<rect.bottom;
     }
   }
+*/
+}
 
+void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
+  for(auto box : groundTruth){
+    //draw groundTruth rectangle with red color
+    rectangle(frame, box.top, box.bottom, Scalar(0,0,255),2 );
+  }
 }
