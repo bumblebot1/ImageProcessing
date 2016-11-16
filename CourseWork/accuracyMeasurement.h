@@ -13,7 +13,7 @@ typedef struct {
   Point bottom;
 } Rectangle;
 
-int is_TP(Rectangle groundTruth, Rectangle detected)
+bool is_TP(Rectangle groundTruth, Rectangle detected)
 {
 	Point resultTL, resultBR;
 	resultTL.x = max(detected.top.x, groundTruth.top.x);
@@ -28,16 +28,16 @@ int is_TP(Rectangle groundTruth, Rectangle detected)
 
 	if ( max(detected.top.x, groundTruth.top.x) > min(detected.bottom.x, groundTruth.bottom.x)
 	  || max(detected.top.y, groundTruth.top.y) > min(detected.bottom.y, groundTruth.bottom.y) )
-		return 0;
+		return false;
 
   cout<<detectedArea<<" "<<groundTruthArea<<endl;
   if(detectedArea >= groundTruthArea * 2)
-    return 0;
+    return false;
 
 	if ( resultArea * 2 >= groundTruthArea )
-		return 1;
+		return true;
 
-	return 0;
+	return false;
 }
 
 vector<Rectangle> readFile(const string& fileName){

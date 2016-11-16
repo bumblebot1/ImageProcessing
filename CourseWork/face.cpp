@@ -19,9 +19,16 @@
 using namespace std;
 using namespace cv;
 
+typedef struct{
+  int tp;
+  int fp;
+  int fn;
+} t_rate;
+
 /** Function Headers */
 void detectAndDisplay( Mat frame );
 void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth);
+t_rate calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput);
 
 /** Global variables */
 String cascade_name = "dartcascade/cascade.xml";
@@ -61,10 +68,6 @@ void detectAndDisplay( Mat frame )
 
        // 3. Print number of Faces found
 	std::cout << faces.size() << std::endl;
-
-  vector<Rectangle> groundTruth = readFile("groundTruth/image8.txt");
-  drawGroundTruth(frame,groundTruth);
-
   // 4. Draw box around faces found
 	for( int i = 0; i < faces.size(); i++ )
 	{
@@ -73,21 +76,15 @@ void detectAndDisplay( Mat frame )
 		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
 	}
 
-/*  for( int i = 0; i < faces.size(); i++ )
-  {
-    Point p0 = Point(faces[i].x, faces[i].y);
-    Point p1 = Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height);
-    Rectangle rect;
-    rect.top = p0;
-    rect.bottom = p1;
-    int result = is_TP(groundTruth[1], rect);
-    printf("%d result\n",result);
-    if(result){
-      rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 102, 255, 255 ), 2);
-      cout<<rect.top<<" "<<rect.bottom;
-    }
-  }
-*/
+
+  //read GroundTruth textFile and draw boxes for it
+  vector<Rectangle> groundTruth = readFile("groundTruth/image8.txt");
+  drawGroundTruth(frame,groundTruth);
+  t_rate rates = calculateRates(frame, groundTruth, faces);
+
+  cout<<"True positives: "<<rates.tp<<endl;
+  cout<<"False positives: "<<rates.fp<<endl;
+  cout<<"False negatives: "<<rates.fn<<endl;
 }
 
 void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
@@ -95,4 +92,36 @@ void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
     //draw groundTruth rectangle with red color
     rectangle(frame, box.top, box.bottom, Scalar(0,0,255),2 );
   }
+}
+
+t_rate calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput){
+  t_rate result;
+  result.tp = 0;
+  result.fp = 0;
+  result.fn = 0;
+  for(auto truthBox : groundTruth){
+    bool detected = false;
+    for(auto detection : detectionOutput){
+      Rectangle rect;
+      Point p0 = Point(detection.x, detection.y);
+      Point p1 = Point(detection.x + detection.width, detection.y + detection.height);
+      rect.top = p0;
+      rect.bottom = p1;
+      bool result = is_TP(truthBox, rect);
+      if(result){
+        //display the true positives with yellow
+        rectangle(frame, p0, p1, Scalar( 102, 255, 255 ), 2);
+        detected = true;
+        break;
+      }
+    }
+    if(detected){
+      result.tp++;
+    } else {
+      result.fn++;
+    }
+  }
+  result.fp = detectionOutput.size() - result.tp;
+
+  return result;
 }
