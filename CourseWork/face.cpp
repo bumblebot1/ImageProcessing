@@ -13,39 +13,47 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <accuracyMeasurement.h>
 
 using namespace std;
 using namespace cv;
 
-typedef struct{
-  int tp;
-  int fp;
-  int fn;
-} t_rate;
-
 /** Function Headers */
-void detectAndDisplay( Mat frame );
+vector<Rect> detectAndDisplay( Mat frame );
+void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage);
 void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth);
-t_rate calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput);
+tuple<int, int, int> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput);
 
 /** Global variables */
 String cascade_name = "dartcascade/cascade.xml";
 CascadeClassifier cascade;
-
+String imagesPath = "Test Images/";
+String groundTruthPath = "groundTruth/";
 
 /** @function main */
 int main( int argc, const char** argv )
 {
-       // 1. Read Input Image
-	Mat frame = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+  stringstream testStream;
+  testStream<<imagesPath<<"dart"<<argv[1]<<".jpg";
+
+  stringstream groundTruthStream;
+  groundTruthStream<<groundTruthPath<<"image"<<argv[1]<<".txt";
+
+  String testImage = testStream.str();
+  String groundTruthImage = groundTruthStream.str();
+
+  // 1. Read Input Image
+	Mat frame = imread(testImage, CV_LOAD_IMAGE_COLOR);
 
 	// 2. Load the Strong Classifier in a structure called `Cascade'
 	if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
 
 	// 3. Detect Faces and Display Result
-	detectAndDisplay( frame );
+	vector<Rect> detections = detectAndDisplay( frame );
+
+  verifyDetections(frame, detections, groundTruthImage);
 
 	// 4. Save Result Image
 	imwrite( "detected.jpg", frame );
@@ -54,7 +62,7 @@ int main( int argc, const char** argv )
 }
 
 /** @function detectAndDisplay */
-void detectAndDisplay( Mat frame )
+vector<Rect> detectAndDisplay( Mat frame )
 {
 	std::vector<Rect> faces;
 	Mat frame_gray;
@@ -76,15 +84,19 @@ void detectAndDisplay( Mat frame )
 		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
 	}
 
+  return faces;
+}
 
+void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage){
   //read GroundTruth textFile and draw boxes for it
-  vector<Rectangle> groundTruth = readFile("groundTruth/image8.txt");
-  drawGroundTruth(frame,groundTruth);
-  t_rate rates = calculateRates(frame, groundTruth, faces);
+  vector<Rectangle> groundTruth = readFile(groundTruthImage);
 
-  cout<<"True positives: "<<rates.tp<<endl;
-  cout<<"False positives: "<<rates.fp<<endl;
-  cout<<"False negatives: "<<rates.fn<<endl;
+  drawGroundTruth(frame, groundTruth);
+  tuple<int, int, int> rates = calculateRates(frame, groundTruth, detectionOutput);
+
+  cout<<"True positives: "<< get<0>(rates) <<endl;
+  cout<<"False positives: "<< get<1>(rates) <<endl;
+  cout<<"False negatives: "<< get<2>(rates) <<endl;
 }
 
 void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
@@ -94,11 +106,9 @@ void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
   }
 }
 
-t_rate calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput){
-  t_rate result;
-  result.tp = 0;
-  result.fp = 0;
-  result.fn = 0;
+tuple<int, int, int> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput){
+  //initialise the three rates (true positives false positives and false negatives with 0)
+  int tp(0),fp(0),fn(0);
   for(auto truthBox : groundTruth){
     bool detected = false;
     for(auto detection : detectionOutput){
@@ -109,19 +119,19 @@ t_rate calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> det
       rect.bottom = p1;
       bool result = is_TP(truthBox, rect);
       if(result){
-        //display the true positives with yellow
-        rectangle(frame, p0, p1, Scalar( 102, 255, 255 ), 2);
+        //draw the true positives with blue on the frame
+        rectangle(frame, p0, p1, Scalar( 255, 153, 51 ), 2);
         detected = true;
         break;
       }
     }
     if(detected){
-      result.tp++;
+      tp++;
     } else {
-      result.fn++;
+      fn++;
     }
   }
-  result.fp = detectionOutput.size() - result.tp;
+  fp = detectionOutput.size() - tp;
 
-  return result;
+  return tuple<int, int, int>(tp, fp, fn);
 }
