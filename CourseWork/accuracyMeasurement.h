@@ -24,12 +24,17 @@ int is_TP(Rectangle groundTruth, Rectangle detected)
 
 	double groundTruthArea =  (groundTruth.bottom.y - groundTruth.top.y)*(groundTruth.bottom.x - groundTruth.top.x);
 	double resultArea 	   =  (resultBR.y - resultTL.y)*(resultBR.x - resultTL.x);
+  double detectedArea    =  (detected.bottom.y - detected.top.y)*(detected.bottom.x - detected.top.x);
 
 	if ( max(detected.top.x, groundTruth.top.x) > min(detected.bottom.x, groundTruth.bottom.x)
 	  || max(detected.top.y, groundTruth.top.y) > min(detected.bottom.y, groundTruth.bottom.y) )
 		return 0;
 
-	if ( resultArea*2 >= groundTruthArea )
+  cout<<detectedArea<<" "<<groundTruthArea<<endl;
+  if(detectedArea >= groundTruthArea * 2)
+    return 0;
+
+	if ( resultArea * 2 >= groundTruthArea )
 		return 1;
 
 	return 0;
