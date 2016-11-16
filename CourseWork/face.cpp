@@ -24,7 +24,8 @@ using namespace cv;
 vector<Rect> detectAndDisplay( Mat frame );
 void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage);
 void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth);
-tuple<int, int, int> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput);
+tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput);
+double calculateF1Score(double tp, double fp, double fn);
 
 /** Global variables */
 String cascade_name = "dartcascade/cascade.xml";
@@ -92,11 +93,16 @@ void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTrut
   vector<Rectangle> groundTruth = readFile(groundTruthImage);
 
   drawGroundTruth(frame, groundTruth);
-  tuple<int, int, int> rates = calculateRates(frame, groundTruth, detectionOutput);
+  tuple<double, double, double> rates = calculateRates(frame, groundTruth, detectionOutput);
+  double tp(get<0>(rates));
+  double fp(get<1>(rates));
+  double fn(get<2>(rates));
 
-  cout<<"True positives: "<< get<0>(rates) <<endl;
-  cout<<"False positives: "<< get<1>(rates) <<endl;
-  cout<<"False negatives: "<< get<2>(rates) <<endl;
+  cout<<"True positives: "<< tp <<endl;
+  cout<<"False positives: "<< fp <<endl;
+  cout<<"False negatives: "<< fn <<endl;
+
+  cout<<"F1 score:"<<calculateF1Score(tp, fp, fn)<<endl;
 }
 
 void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
@@ -106,9 +112,9 @@ void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
   }
 }
 
-tuple<int, int, int> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput){
+tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput){
   //initialise the three rates (true positives false positives and false negatives with 0)
-  int tp(0),fp(0),fn(0);
+  double tp(0),fp(0),fn(0);
   for(auto truthBox : groundTruth){
     bool detected = false;
     for(auto detection : detectionOutput){
@@ -133,5 +139,9 @@ tuple<int, int, int> calculateRates(Mat frame, vector<Rectangle> groundTruth, ve
   }
   fp = detectionOutput.size() - tp;
 
-  return tuple<int, int, int>(tp, fp, fn);
+  return tuple<double, double, double>(tp, fp, fn);
+}
+
+double calculateF1Score(double tp, double fp, double fn){
+  return 2 * tp / (2 * tp + fp + fn);
 }
