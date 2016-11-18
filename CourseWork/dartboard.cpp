@@ -59,9 +59,13 @@ int main( int argc, char** argv ){
   Mat thresholded = threshold(normalisedMag, 50);
   imshow("Thresholded",thresholded);
 
-  /*calculate hough space transformation*/
-  Mat houghSpace = hough(thresholded, dir, 20, 100, 10);
-  imshow("houghSpace", normalise(houghSpace));
+  /*calculate hough space circle transformation*/
+  Mat houghSpaceCircle = houghCircles(thresholded, dir, 20, 100, 10);
+  imshow("houghCircles", normalise(houghSpaceCircle));
+
+
+  Mat houghSpaceLine = houghLines(thresholded, dir, 10);
+  imshow("houghLines", normalise(houghSpaceLine));
 
   waitKey(0);
   return 0;

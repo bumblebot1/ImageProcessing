@@ -7,7 +7,7 @@
 
 using namespace cv;
 
-Mat hough(Mat magnitude, Mat orientation, int minRadius, int maxRadius, int Th){
+Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius, int Th){
   int dims[] = {magnitude.rows, magnitude.cols, maxRadius-minRadius +1};
   Mat H(3, dims, CV_32FC1, Scalar::all(0));
 
@@ -40,6 +40,35 @@ Mat hough(Mat magnitude, Mat orientation, int minRadius, int maxRadius, int Th){
     }
   }
   return houghSpace;
+}
+
+Mat houghLines(Mat magnitude, Mat orientation, int Th){
+  int dims[] = { 360, 2*(magnitude.rows + magnitude.cols)};
+  Mat H(2, dims, CV_32FC1, Scalar::all(0));
+
+  for(int x = 0; x < magnitude.rows; x++){
+    for(int y = 0; y < magnitude.cols; y++){
+      if(magnitude.at<uchar>(x,y) == 255){
+        int angle = orientation.at<float>(x,y) * 180 / M_PI;
+
+        for(int delta = -10; delta < 10; delta++){
+            float theta = (angle + delta + 360) % 360;
+            theta = theta * M_PI / 180;
+
+            float ro = x* std::cos(theta) + y*std::sin(theta) + magnitude.rows + magnitude.cols;
+
+              theta = theta * 180 / M_PI;
+              H.at<float>((int) theta, (int) ro) += 1;
+
+        }
+      }
+    }
+  }
+
+  Mat toReturn;
+  cv:: Size size(H.rows, H.cols/3);
+  cv::resize(H,toReturn, size);
+  return toReturn;
 }
 
 #endif
