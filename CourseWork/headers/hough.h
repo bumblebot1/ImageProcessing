@@ -11,19 +11,19 @@ Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius, i
   int dims[] = {magnitude.rows, magnitude.cols, maxRadius-minRadius +1};
   Mat H(3, dims, CV_32FC1, Scalar::all(0));
 
-  for(int x = 0; x < magnitude.rows; x++){
-    for(int y = 0; y < magnitude.cols; y++){
-      if(magnitude.at<uchar>(x,y) == 255){
+  for(int y = 0; y < magnitude.rows; y++){
+    for(int x = 0; x < magnitude.cols; x++){
+      if(magnitude.at<uchar>(y,x) == 255){
         for(int k = minRadius; k < maxRadius; k++){
-          int x0 = x + k*std::sin(orientation.at<float>(x,y));
-          int y0 = y + k*std::cos(orientation.at<float>(x,y));
-          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.rows && y0 < magnitude.cols)
-            H.at<float>(x0,y0,k-minRadius)++;
+          int y0 = y + k*std::sin(orientation.at<float>(y,x));
+          int x0 = x + k*std::cos(orientation.at<float>(y,x));
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+            H.at<float>(y0,x0,k-minRadius)++;
 
-          x0 = x - k*std::sin(orientation.at<float>(x,y));
-          y0 = y - k*std::cos(orientation.at<float>(x,y));
-          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.rows && y0 < magnitude.cols)
-            H.at<float>(x0,y0,k-minRadius)++;
+          y0 = y - k*std::sin(orientation.at<float>(y,x));
+          x0 = x - k*std::cos(orientation.at<float>(y,x));
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+            H.at<float>(y0,x0,k-minRadius)++;
         }
       }
     }
@@ -31,11 +31,11 @@ Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius, i
 
 
   Mat houghSpace = Mat(magnitude.rows, magnitude.cols, CV_64FC1);
-  for(int x = 0; x < magnitude.rows; x++){
-    for(int y = 0; y < magnitude.cols; y++){
-      houghSpace.at<double>(x,y) = 0;
+  for(int y = 0; y < magnitude.rows; y++){
+    for(int x = 0; x < magnitude.cols; x++){
+      houghSpace.at<double>(y,x) = 0;
       for(int k = minRadius; k < maxRadius; k++){
-        houghSpace.at<double>(x,y) += H.at<float>(x,y,k-minRadius);
+        houghSpace.at<double>(y,x) += H.at<float>(y,x,k-minRadius);
       }
     }
   }
@@ -46,10 +46,10 @@ Mat houghLines(Mat magnitude, Mat orientation, int Th){
   int dims[] = { 360, 2*(magnitude.rows + magnitude.cols)};
   Mat H(2, dims, CV_32FC1, Scalar::all(0));
 
-  for(int x = 0; x < magnitude.rows; x++){
-    for(int y = 0; y < magnitude.cols; y++){
-      if(magnitude.at<uchar>(x,y) == 255){
-        int angle = orientation.at<float>(x,y) * 180 / M_PI;
+  for(int y = 0; y < magnitude.rows; y++){
+    for(int x = 0; x < magnitude.cols; x++){
+      if(magnitude.at<uchar>(y,x) == 255){
+        int angle = orientation.at<float>(y,x) * 180 / M_PI;
 
         for(int delta = -10; delta < 10; delta++){
             float theta = (angle + delta + 360) % 360;

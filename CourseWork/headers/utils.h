@@ -15,12 +15,12 @@ Mat normalise(Mat src){
 
 Mat threshold(Mat original, uchar value){
  Mat result = Mat(original.rows, original.cols, CV_8UC1);
- for(int x = 0; x < original.rows; x++){
-   for(int y = 0; y < original.cols; y++){
-     if(original.at<uchar>(x,y) > value)
-        result.at<uchar>(x,y) = 255;
+ for(int y = 0; y < original.rows; y++){
+   for(int x = 0; x < original.cols; x++){
+     if(original.at<uchar>(y,x) > value)
+        result.at<uchar>(y,x) = 255;
      else
-        result.at<uchar>(x,y) = 0;
+        result.at<uchar>(y,x) = 0;
    }
  }
  return result;
@@ -28,11 +28,11 @@ Mat threshold(Mat original, uchar value){
 
 Mat magnitude(Mat grad_x, Mat grad_y){
   Mat result = Mat(grad_x.rows, grad_x.cols, CV_32FC1);
-  for(int x = 0; x < grad_x.rows; x++){
-    for(int y = 0; y < grad_y.cols; y++){
-      float i = grad_x.at<float>(x,y);
-      float j = grad_y.at<float>(x,y);
-      result.at<float>(x,y) = std::floor(std::sqrt(i*i + j*j));
+  for(int y = 0; y < grad_x.rows; y++){
+    for(int x = 0; x < grad_x.cols; x++){
+      float i = grad_x.at<float>(y,x);
+      float j = grad_y.at<float>(y,x);
+      result.at<float>(y,x) = std::floor(std::sqrt(i*i + j*j));
     }
   }
   return result;
@@ -40,11 +40,11 @@ Mat magnitude(Mat grad_x, Mat grad_y){
 
 Mat gradient_direction(Mat grad_x, Mat grad_y) {
   Mat result = Mat(grad_x.rows, grad_x.cols, CV_32FC1);
-  for(int x = 0; x < grad_x.rows; x++){
-    for(int y = 0; y < grad_y.cols; y++){
-      float i = grad_x.at<float>(x,y);
-      float j = grad_y.at<float>(x,y);
-      result.at<float>(x,y) = std::atan2(j,i);
+  for(int y = 0; y < grad_x.rows; y++){
+    for(int x = 0; x < grad_x.cols; x++){
+      float a = grad_x.at<float>(y,x);
+      float b = grad_y.at<float>(y,x);
+      result.at<float>(y,x) = std::atan2(b,a);
      }
    }
    return result;
