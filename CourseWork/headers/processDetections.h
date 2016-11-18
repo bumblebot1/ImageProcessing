@@ -1,10 +1,10 @@
 #ifndef DETECTIONS_H
 #define DETECTIONS_H
 
-#include<iostream>
-#include<vector>
-#include<opencv2/opencv.hpp>
-#include<headers/accuracyMeasurement.h>
+#include "iostream"
+#include "vector"
+#include "opencv2/opencv.hpp"
+#include "headers/accuracyMeasurement.h"
 
 using namespace std;
 using namespace cv;
