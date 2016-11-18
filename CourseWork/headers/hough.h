@@ -57,9 +57,8 @@ Mat houghLines(Mat magnitude, Mat orientation, int Th){
 
             float ro = x* std::cos(theta) + y*std::sin(theta) + magnitude.rows + magnitude.cols;
 
-              theta = theta * 180 / M_PI;
-              H.at<float>((int) theta, (int) ro) += 1;
-
+            theta = theta * 180 / M_PI;
+            H.at<float>((int) theta, (int) ro) += 1;
         }
       }
     }
