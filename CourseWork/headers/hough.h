@@ -43,7 +43,8 @@ Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius, i
 }
 
 Mat houghLines(Mat magnitude, Mat orientation, int Th){
-  int dims[] = { 360, 2*(magnitude.rows + magnitude.cols)};
+  int roSize = (int)std::sqrt(magnitude.rows * magnitude.rows + magnitude.cols * magnitude.cols);
+  int dims[] = { 360, roSize};
   Mat H(2, dims, CV_32FC1, Scalar::all(0));
 
   for(int y = 0; y < magnitude.rows; y++){
@@ -55,7 +56,7 @@ Mat houghLines(Mat magnitude, Mat orientation, int Th){
             float theta = (angle + delta + 360) % 360;
             theta = theta * M_PI / 180;
 
-            float ro = x* std::cos(theta) + y*std::sin(theta) + magnitude.rows + magnitude.cols;
+            float ro = x* std::cos(theta) + y*std::sin(theta);
 
             theta = theta * 180 / M_PI;
             H.at<float>((int) theta, (int) ro) += 1;
@@ -65,7 +66,7 @@ Mat houghLines(Mat magnitude, Mat orientation, int Th){
   }
 
   Mat toReturn;
-  cv:: Size size(H.rows, H.cols/3);
+  cv:: Size size(H.rows, H.cols);
   cv::resize(H,toReturn, size);
   return toReturn;
 }
