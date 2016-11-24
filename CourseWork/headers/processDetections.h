@@ -17,10 +17,12 @@ double calculateF1Score(double tp, double fp, double fn);
 
 
 void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage){
-  //read GroundTruth textFile and draw boxes for it
+  //read GroundTruth textFile & store predicted dartboards 
   vector<Rectangle> groundTruth = readFile(groundTruthImage);
 
+  //draw boxes for predicted/GroundTruth dartboards 
   drawGroundTruth(frame, groundTruth);
+
   tuple<double, double, double> rates = calculateRates(frame, groundTruth, detectionOutput);
   double tp(get<0>(rates));
   double fp(get<1>(rates));
@@ -46,13 +48,17 @@ tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> ground
 
   for(auto truthBox : groundTruth){
     bool detected = false;
+
     for(auto detection : detectionOutput){
       Rectangle rect;
       Point p0 = Point(detection.x, detection.y);
       Point p1 = Point(detection.x + detection.width, detection.y + detection.height);
+
       rect.top = p0;
       rect.bottom = p1;
+
       bool result = is_TP(truthBox, rect);
+
       if(result){
         //draw the true positives with blue on the frame
         rectangle(frame, p0, p1, Scalar( 255, 153, 51 ), 2);
@@ -60,12 +66,14 @@ tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> ground
         break;
       }
     }
+
     if(detected){
       tp++;
     } else {
       fn++;
     }
   }
+  
   fp = detectionOutput.size() - tp;
 
   return tuple<double, double, double>(tp, fp, fn);
