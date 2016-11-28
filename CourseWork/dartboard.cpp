@@ -13,6 +13,7 @@
 #include "headers/hough.h"
 #include "headers/convolution.h"
 #include "headers/utils.h"
+#include "headers/detect.h"
 
 int main( int argc, char** argv ){
   // LOADING THE IMAGE
@@ -20,6 +21,8 @@ int main( int argc, char** argv ){
 
   Mat image;
   image = imread( imageName, 0 );
+  Mat original;
+  original = imread( imageName, 1);
 
   if( argc != 2 || !image.data )
   {
@@ -56,15 +59,18 @@ int main( int argc, char** argv ){
   imshow("Phase", normalisedDir);
 
   /*threshold magnitude*/
-  Mat thresholded = threshold(normalisedMag, 50);
+  Mat thresholded = threshold(normalisedMag, 40);
   imshow("Thresholded",thresholded);
 
   /*calculate hough space circle transformation*/
-  Mat houghSpaceCircle = houghCircles(thresholded, dir, 20, 100, 10);
-  imshow("houghCircles", normalise(houghSpaceCircle));
+  Mat hCircles = houghCircles(thresholded, dir, 20, 200);
 
+  Mat houghSpaceCircles = visualiseHoughCircles(hCircles, 20, 200);
+  imshow("houghCircles", normalise(houghSpaceCircles));
 
-  Mat houghSpaceLine = houghLines(thresholded, dir, 10);
+  detectCircles(normalise(houghSpaceCircles), hCircles, 100, 200, original);
+
+  Mat houghSpaceLine = houghLines(thresholded, dir);
   imshow("houghLines", normalise(houghSpaceLine));
 
   waitKey(0);

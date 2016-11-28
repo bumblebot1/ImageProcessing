@@ -7,8 +7,8 @@
 
 using namespace cv;
 
-Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius, int Th){
-  int dims[] = {magnitude.rows, magnitude.cols, maxRadius-minRadius +1};
+Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius){
+  int dims[] = {magnitude.rows, magnitude.cols, maxRadius-minRadius};
   Mat H(3, dims, CV_32FC1, Scalar::all(0));
 
   for(int y = 0; y < magnitude.rows; y++){
@@ -28,11 +28,13 @@ Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius, i
       }
     }
   }
+  return H;
+}
 
-
-  Mat houghSpace = Mat(magnitude.rows, magnitude.cols, CV_64FC1);
-  for(int y = 0; y < magnitude.rows; y++){
-    for(int x = 0; x < magnitude.cols; x++){
+Mat visualiseHoughCircles(Mat H, int minRadius, int maxRadius){
+  Mat houghSpace = Mat(H.size[0], H.size[1], CV_64FC1);
+  for(int y = 0; y < houghSpace.rows; y++){
+    for(int x = 0; x < houghSpace.cols; x++){
       houghSpace.at<double>(y,x) = 0;
       for(int k = minRadius; k < maxRadius; k++){
         houghSpace.at<double>(y,x) += H.at<float>(y,x,k-minRadius);
@@ -42,7 +44,7 @@ Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius, i
   return houghSpace;
 }
 
-Mat houghLines(Mat magnitude, Mat orientation, int Th){
+Mat houghLines(Mat magnitude, Mat orientation){
   int roSize = (int)std::sqrt(magnitude.rows * magnitude.rows + magnitude.cols * magnitude.cols);
   int dims[] = { 360, roSize};
   Mat H(2, dims, CV_32FC1, Scalar::all(0));
