@@ -68,7 +68,7 @@ int main( int argc, char** argv ){
   Mat houghSpaceCircles = visualiseHoughCircles(hCircles, 20, 200);
   imshow("houghCircles", normalise(houghSpaceCircles));
 
-  detectCircles(normalise(houghSpaceCircles), hCircles, 100, 200, original);
+  detectCircles(normalise(houghSpaceCircles), hCircles, 100, 220, original);
 
   Mat houghSpaceLine = houghLines(thresholded, dir);
   imshow("houghLines", normalise(houghSpaceLine));
