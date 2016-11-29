@@ -11,16 +11,16 @@ using namespace cv;
 
 /*function headers*/
 void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage);
-void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth);
-tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput);
+void drawGroundTruth(Mat frame, vector<Rect> groundTruth);
+tuple<double, double, double> calculateRates(Mat frame, vector<Rect> groundTruth, vector<Rect> detectionOutput);
 double calculateF1Score(double tp, double fp, double fn);
 
 
 void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage){
-  //read GroundTruth textFile & store predicted dartboards 
-  vector<Rectangle> groundTruth = readFile(groundTruthImage);
+  //read GroundTruth textFile & store predicted dartboards
+  vector<Rect> groundTruth = readFile(groundTruthImage);
 
-  //draw boxes for predicted/GroundTruth dartboards 
+  //draw boxes for predicted/GroundTruth dartboards
   drawGroundTruth(frame, groundTruth);
 
   tuple<double, double, double> rates = calculateRates(frame, groundTruth, detectionOutput);
@@ -35,14 +35,14 @@ void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTrut
   cout<<"F1 score:"<<calculateF1Score(tp, fp, fn)<<endl;
 }
 
-void drawGroundTruth(Mat frame, vector<Rectangle> groundTruth){
+void drawGroundTruth(Mat frame, vector<Rect> groundTruth){
   for(auto box : groundTruth){
     //draw groundTruth rectangle with red color
-    rectangle(frame, box.top, box.bottom, Scalar(0,0,255),2 );
+    rectangle(frame, box.tl(), box.br(), Scalar(0,0,255),2 );
   }
 }
 
-tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> groundTruth, vector<Rect> detectionOutput){
+tuple<double, double, double> calculateRates(Mat frame, vector<Rect> groundTruth, vector<Rect> detectionOutput){
   //initialise the three rates (true positives false positives and false negatives with 0)
   double tp(0),fp(0),fn(0);
 
@@ -50,18 +50,11 @@ tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> ground
     bool detected = false;
 
     for(auto detection : detectionOutput){
-      Rectangle rect;
-      Point p0 = Point(detection.x, detection.y);
-      Point p1 = Point(detection.x + detection.width, detection.y + detection.height);
-
-      rect.top = p0;
-      rect.bottom = p1;
-
-      bool result = is_TP(truthBox, rect);
+      bool result = is_TP(truthBox, detection);
 
       if(result){
         //draw the true positives with blue on the frame
-        rectangle(frame, p0, p1, Scalar( 255, 153, 51 ), 2);
+        rectangle(frame, detection.tl(), detection.br(), Scalar( 255, 153, 51 ), 2);
         detected = true;
         break;
       }
@@ -73,7 +66,7 @@ tuple<double, double, double> calculateRates(Mat frame, vector<Rectangle> ground
       fn++;
     }
   }
-  
+
   fp = detectionOutput.size() - tp;
 
   return tuple<double, double, double>(tp, fp, fn);
