@@ -44,19 +44,24 @@ void drawGroundTruth(Mat frame, vector<Rect> groundTruth){
 
 tuple<double, double, double> calculateRates(Mat frame, vector<Rect> groundTruth, vector<Rect> detectionOutput){
   //initialise the three rates (true positives false positives and false negatives with 0)
-  double tp(0),fp(0),fn(0);
+  double tp(0),fp(0),fn(0),total(detectionOutput.size());
 
   for(auto truthBox : groundTruth){
     bool detected = false;
 
-    for(auto detection : detectionOutput){
+    for(int i = 0; i < detectionOutput.size(); i++){
+      Rect detection = detectionOutput[i];
       bool result = is_TP(truthBox, detection);
 
       if(result){
         //draw the true positives with blue on the frame
         rectangle(frame, detection.tl(), detection.br(), Scalar( 255, 153, 51 ), 2);
         detected = true;
+        detectionOutput.erase(detectionOutput.begin() + i);
         break;
+      }
+      else{
+        rectangle(frame, detection.tl(), detection.br(), Scalar( 0, 255, 0), 2);
       }
     }
 
@@ -67,7 +72,7 @@ tuple<double, double, double> calculateRates(Mat frame, vector<Rect> groundTruth
     }
   }
 
-  fp = detectionOutput.size() - tp;
+  fp = total - tp;
 
   return tuple<double, double, double>(tp, fp, fn);
 }

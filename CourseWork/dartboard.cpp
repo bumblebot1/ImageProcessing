@@ -14,6 +14,7 @@
 #include "headers/convolution.h"
 #include "headers/utils.h"
 #include "headers/detect.h"
+#include "headers/processDetections.h"
 
 int main( int argc, char** argv ){
   // LOADING THE IMAGE
@@ -24,7 +25,7 @@ int main( int argc, char** argv ){
   Mat original;
   original = imread( imageName, 1);
 
-  if( argc != 2 || !image.data )
+  if( argc < 2 || !image.data )
   {
     printf( " No image data \n " );
     return -1;
@@ -68,7 +69,12 @@ int main( int argc, char** argv ){
   Mat houghSpaceCircles = visualiseHoughCircles(hCircles, 20, 200);
   imshow("houghCircles", normalise(houghSpaceCircles));
 
-  detectCircles(normalise(houghSpaceCircles), hCircles, 100, 220, original);
+  vector<Rect> detections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, original);
+  if(argc > 2){
+    verifyDetections(original, detections, argv[2]);
+  }
+
+  imshow("detections", original);
 
   Mat houghSpaceLine = houghLines(thresholded, dir);
   imshow("houghLines", normalise(houghSpaceLine));
