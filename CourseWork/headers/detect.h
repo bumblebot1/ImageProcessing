@@ -29,7 +29,9 @@ void detectCircles(Mat houghSpace, Mat H, int maxRadius, int threshold, Mat orig
       const int minVotes = 5;
       for(int radius = H.size[2] - 1; radius >= 0; radius--){
         if(H.at<float>(center.y,center.x,radius)>minVotes){
-          circle(original,center,radius,Scalar(255,255,0),2);
+          Point p0 = Point(center.x - radius, center.y - radius);
+          Point p1 = Point(center.x + radius, center.y + radius);
+          rectangle(original, p0, p1, Scalar(255,255,0), 2);
           break;
         }
       }
