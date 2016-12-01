@@ -80,12 +80,13 @@ int main( int argc, char** argv ){
   }
   imshow("HCircleDetections", original);
 
-  Mat houghSpaceLines = visualiseHoughLines(thresholded, dir);
+
+  /*Mat houghSpaceLines = visualiseHoughLines(thresholded, dir);
   imshow("houghLines", normalise(houghSpaceLines));
 
   detectLines(houghSpaceLines, 40, original);
   imshow("HLineDetections", original);
-
+  */
   waitKey(0);
   return 0;
 }
