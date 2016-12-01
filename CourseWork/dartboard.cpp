@@ -69,15 +69,22 @@ int main( int argc, char** argv ){
   Mat houghSpaceCircles = visualiseHoughCircles(hCircles, 20, 200);
   imshow("houghCircles", normalise(houghSpaceCircles));
 
-  vector<Rect> detections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, original);
+  vector<Rect> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, original);
+
   if(argc > 2){
-    verifyDetections(original, detections, argv[2]);
+  	//draw ground truth and Hough Circle detections(tp+fp) altogether
+    verifyDetections(original, hCircledetections, argv[2]);
+  } else {
+  	//draw only Hough Circle detections
+  	displayHCircleDetections(original, hCircledetections);
   }
+  imshow("HCircleDetections", original);
 
-  imshow("detections", original);
+  Mat houghSpaceLines = visualiseHoughLines(thresholded, dir);
+  imshow("houghLines", normalise(houghSpaceLines));
 
-  Mat houghSpaceLine = houghLines(thresholded, dir);
-  imshow("houghLines", normalise(houghSpaceLine));
+  detectLines(houghSpaceLines, 40, original);
+  imshow("HLineDetections", original);
 
   waitKey(0);
   return 0;
