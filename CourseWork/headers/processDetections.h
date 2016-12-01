@@ -10,13 +10,13 @@ using namespace std;
 using namespace cv;
 
 /*function headers*/
-void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage);
+tuple<double, double, double, double> verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage);
 void drawGroundTruth(Mat frame, vector<Rect> groundTruth);
 tuple<double, double, double> calculateRates(Mat frame, vector<Rect> groundTruth, vector<Rect> detectionOutput);
 double calculateF1Score(double tp, double fp, double fn);
 
 
-void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage){
+tuple<double, double, double, double> verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTruthImage){
   //read GroundTruth textFile & store predicted dartboards
   vector<Rect> groundTruth = readFile(groundTruthImage);
 
@@ -27,12 +27,14 @@ void verifyDetections(Mat frame, vector<Rect> detectionOutput, String groundTrut
   double tp(get<0>(rates));
   double fp(get<1>(rates));
   double fn(get<2>(rates));
+  double f1(calculateF1Score(tp,fp,fn));
 
   cout<<"True positives: "<< tp <<endl;
   cout<<"False positives: "<< fp <<endl;
   cout<<"False negatives: "<< fn <<endl;
 
-  cout<<"F1 score:"<<calculateF1Score(tp, fp, fn)<<endl;
+  cout<<"F1 score:"<< f1 <<endl;
+  return tuple<double, double, double, double>(tp, fp, fn, f1);
 }
 
 void drawGroundTruth(Mat frame, vector<Rect> groundTruth){
