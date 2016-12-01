@@ -77,10 +77,13 @@ void detectLines(Mat houghLinesSpace, int threshold, Mat original)
         point1.x = x1;
         point1.y = y1;
 
-        int x2 = r/std::cos(angle_rad);
-        int y2 = 0;
+        int x2 = original.cols;
+        int y2 = (r - x2*std::cos(angle_rad))/std::sin(angle_rad);
         point2.x = x2;
         point2.y = y2;
+
+        //int x2 = r/std::cos(angle_rad);
+        //int y2 = 0;
 
         line(original, point1, point2, Scalar(0,0,255), 2); 
 

@@ -63,27 +63,45 @@ int main( int argc, char** argv ){
   Mat thresholded = threshold(normalisedMag, 40);
   imshow("Thresholded",thresholded);
 
+
+
+
   /*calculate hough space circle transformation*/
   Mat hCircles = houghCircles(thresholded, dir, 20, 200);
 
   Mat houghSpaceCircles = visualiseHoughCircles(hCircles, 20, 200);
   imshow("houghCircles", normalise(houghSpaceCircles));
 
+
+
+
+  /*calculate hough space line transformation in a circle-wise way*/
+  Mat hLines2 = houghLines2(thresholded, dir, 0, 60);
+
+  Mat houghSpaceLines2 = visualiseHoughLines2(hLines2, 0, 60);
+  imshow("houghLines2", normalise(houghSpaceLines2));
+
+
+
+
   vector<Rect> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, original);
 
   if(argc > 2){
-  	//draw ground truth and Hough Circle detections(tp+fp) altogether
+  	//draw ground truth and Hough Circle detections(tp+fp) altogether on original image
     verifyDetections(original, hCircledetections, argv[2]);
   } else {
-  	//draw only Hough Circle detections
+  	//draw only Hough Circle detections on original image
   	displayHCircleDetections(original, hCircledetections);
   }
   imshow("HCircleDetections", original);
 
+
+
+
   Mat houghSpaceLines = visualiseHoughLines(thresholded, dir);
   imshow("houghLines", normalise(houghSpaceLines));
 
-  detectLines(houghSpaceLines, 40, original);
+  detectLines(houghSpaceLines, 55, original);
   imshow("HLineDetections", original);
 
   waitKey(0);

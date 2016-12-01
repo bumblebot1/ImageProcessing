@@ -45,6 +45,43 @@ Mat visualiseHoughCircles(Mat H, int minRadius, int maxRadius){
   return houghSpace;
 }
 
+Mat houghLines2(Mat magnitude, Mat orientation, int minRadius, int maxRadius){
+  int dims[] = {magnitude.rows, magnitude.cols, maxRadius-minRadius};
+  Mat H(3, dims, CV_32FC1, Scalar::all(0));
+
+  for(int y = 0; y < magnitude.rows; y++){
+    for(int x = 0; x < magnitude.cols; x++){
+      if(magnitude.at<uchar>(y,x) == 255){
+        for(int k = minRadius; k < maxRadius; k++){
+          int y0 = y + k*std::sin( orientation.at<float>(y,x) + (90 * M_PI / 180) );
+          int x0 = x + k*std::cos( orientation.at<float>(y,x) + (90 * M_PI / 180) );
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+            H.at<float>(y0,x0,k-minRadius)++;
+
+          y0 = y - k*std::sin( orientation.at<float>(y,x) + (90 * M_PI / 180) );
+          x0 = x - k*std::cos( orientation.at<float>(y,x) + (90 * M_PI / 180) );
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+            H.at<float>(y0,x0,k-minRadius)++;
+        }
+      }
+    }
+  }
+  return H;
+}
+
+Mat visualiseHoughLines2(Mat H, int minRadius, int maxRadius){
+  Mat houghSpace = Mat(H.size[0], H.size[1], CV_64FC1, Scalar::all(0));
+  for(int y = 0; y < houghSpace.rows; y++){
+    for(int x = 0; x < houghSpace.cols; x++){
+
+      for(int k = minRadius; k < maxRadius; k++){
+        houghSpace.at<double>(y,x) += H.at<float>(y,x,k-minRadius);
+      }
+    }
+  }
+  return houghSpace;
+}
+
 Mat visualiseHoughLines(Mat magnitude, Mat orientation){
   int roSize = (int)std::sqrt(magnitude.rows * magnitude.rows + magnitude.cols * magnitude.cols);
   int dims[] = {360, roSize};
