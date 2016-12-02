@@ -25,11 +25,11 @@ bool is_TP(Rect groundTruth, Rect detected)
   if ( max(detected.tl().x, groundTruth.tl().x) > min(detected.br().x, groundTruth.br().x)
     || max(detected.tl().y, groundTruth.tl().y) > min(detected.br().y, groundTruth.br().y) )
     return false;
-  cout<<"Detection Area:"<<detectedArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
+  //cout<<"Detection Area:"<<detectedArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
   if ( detectedArea >= groundTruthArea * 2 )
     return false;
 
-  cout<<"Intersection Area:"<<resultArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
+  //cout<<"Intersection Area:"<<resultArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
   if ( resultArea * 2 >= groundTruthArea )
     return true;
 

@@ -14,16 +14,18 @@ Mat normalise(Mat src){
 }
 
 Mat threshold(Mat original, uchar value){
- Mat result = Mat(original.rows, original.cols, CV_8UC1);
- for(int y = 0; y < original.rows; y++){
-   for(int x = 0; x < original.cols; x++){
-     if(original.at<uchar>(y,x) > value)
+  Mat result = Mat(original.rows, original.cols, CV_8UC1);
+  for(int y = 0; y < original.rows; y++){
+    for(int x = 0; x < original.cols; x++){
+      if(original.at<uchar>(y,x) > value){
         result.at<uchar>(y,x) = 255;
-     else
+      }
+      else{
         result.at<uchar>(y,x) = 0;
-   }
- }
- return result;
+      }
+    }
+  }
+  return result;
 }
 
 Mat magnitude(Mat grad_x, Mat grad_y){
@@ -45,9 +47,31 @@ Mat gradient_direction(Mat grad_x, Mat grad_y) {
       float a = grad_x.at<float>(y,x);
       float b = grad_y.at<float>(y,x);
       result.at<float>(y,x) = std::atan2(b,a);
-     }
-   }
-   return result;
- }
+    }
+  }
+  return result;
+}
+
+Mat scaleHeight(Mat original, float factor){
+  if(factor == 1){
+    //dont resize to same size
+    return original;
+  }
+
+  Mat resized;
+  Size size(original.cols, (int)(original.rows * factor));
+  resize(original, resized, size);
+  return resized;
+}
+
+vector<Rect> convertToBoxes(vector<Point3i> pointRepresentation){
+  vector<Rect> boundingBoxes;
+  for(auto detection : pointRepresentation){
+    Point p0 = Point(detection.x - detection.z, detection.y - detection.z);
+    Point p1 = Point(detection.x + detection.z, detection.y + detection.z);
+    boundingBoxes.push_back(Rect(p0,p1));
+  }
+  return boundingBoxes;
+}
 
 #endif

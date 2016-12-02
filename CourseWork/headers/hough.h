@@ -18,13 +18,15 @@ Mat houghCircles(Mat magnitude, Mat orientation, int minRadius, int maxRadius){
         for(int k = minRadius; k < maxRadius; k++){
           int y0 = y + k*std::sin(orientation.at<float>(y,x));
           int x0 = x + k*std::cos(orientation.at<float>(y,x));
-          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows){
             H.at<float>(y0,x0,k-minRadius)++;
+          }
 
           y0 = y - k*std::sin(orientation.at<float>(y,x));
           x0 = x - k*std::cos(orientation.at<float>(y,x));
-          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows){
             H.at<float>(y0,x0,k-minRadius)++;
+          }
         }
       }
     }
@@ -36,7 +38,6 @@ Mat visualiseHoughCircles(Mat H, int minRadius, int maxRadius){
   Mat houghSpace = Mat(H.size[0], H.size[1], CV_64FC1, Scalar::all(0));
   for(int y = 0; y < houghSpace.rows; y++){
     for(int x = 0; x < houghSpace.cols; x++){
-
       for(int k = minRadius; k < maxRadius; k++){
         houghSpace.at<double>(y,x) += H.at<float>(y,x,k-minRadius);
       }
@@ -55,13 +56,15 @@ Mat houghLines2(Mat magnitude, Mat orientation, int minRadius, int maxRadius){
         for(int k = minRadius; k < maxRadius; k++){
           int y0 = y + k*std::sin( orientation.at<float>(y,x) + (90 * M_PI / 180) );
           int x0 = x + k*std::cos( orientation.at<float>(y,x) + (90 * M_PI / 180) );
-          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows){
             H.at<float>(y0,x0,k-minRadius)++;
+          }
 
           y0 = y - k*std::sin( orientation.at<float>(y,x) + (90 * M_PI / 180) );
           x0 = x - k*std::cos( orientation.at<float>(y,x) + (90 * M_PI / 180) );
-          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows)
+          if(x0 >= 0 && y0 >= 0 && x0 < magnitude.cols && y0 < magnitude.rows){
             H.at<float>(y0,x0,k-minRadius)++;
+          }
         }
       }
     }
@@ -73,7 +76,6 @@ Mat visualiseHoughLines2(Mat H, int minRadius, int maxRadius){
   Mat houghSpace = Mat(H.size[0], H.size[1], CV_64FC1, Scalar::all(0));
   for(int y = 0; y < houghSpace.rows; y++){
     for(int x = 0; x < houghSpace.cols; x++){
-
       for(int k = minRadius; k < maxRadius; k++){
         houghSpace.at<double>(y,x) += H.at<float>(y,x,k-minRadius);
       }
@@ -90,12 +92,12 @@ Mat visualiseHoughLines(Mat magnitude, Mat orientation){
   //cout<<"Ro size = "<<roSize<<endl;
   //cout<<"H.rows = "<<H.rows<<endl;
   //cout<<"H.cols = "<<H.cols<<endl;
-  
+
   for(int y = 0; y < magnitude.rows; y++){
     for(int x = 0; x < magnitude.cols; x++){
       if(magnitude.at<uchar>(y,x) == 255){
 
-        //convert radians (gradient direction value) to degrees (angle) 
+        //convert radians (gradient direction value) to degrees (angle)
         //so we can calculate all theta values in the delta interval
         int angle = orientation.at<float>(y,x) * 180 / M_PI;
 

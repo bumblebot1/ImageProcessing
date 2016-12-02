@@ -2,6 +2,7 @@ face
 dartboard
 overallViola
 violaDetections/
+debugOutput/
 detected.jpg
 negatives/
 negatives.dat
