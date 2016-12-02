@@ -40,7 +40,7 @@ int main( int argc, char** argv ){
   char maskY[9] = { -1, -2, -1, 0, 0, 0, 1, 2, 1};
   Mat maskDy = Mat(3, 3, CV_8SC1, maskY);
 
-  vector<Point3i> allDetections;
+  vector<Rect> allDetections;
   vector<float> scalingFactors = {1, 0.5};
   cout<<scalingFactors.size()<<endl;
 
@@ -95,15 +95,22 @@ int main( int argc, char** argv ){
 
     vector<Point3i> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, testOriginal);
 
-    if(factor < 1){
-      for(int i = 0; i < hCircledetections.size(); i++){
+    for(int i = 0; i < hCircledetections.size(); i++){
+      if(factor < 1){
         cout<<"before rescalling"<<hCircledetections[i]<<endl;
         hCircledetections[i].y = (int) (hCircledetections[i].y / factor);
-        hCircledetections[i].z = (int) (hCircledetections[i].z / factor);
+        int yRadius = (int) (hCircledetections[i].z / factor);
+        int xRadius = (int) (hCircledetections[i].z);
+        Point tl = Point(hCircledetections[i].x - xRadius, hCircledetections[i].y - yRadius);
+        Point br = Point(hCircledetections[i].x + xRadius, hCircledetections[i].y + yRadius);
+        allDetections.push_back(Rect(tl,br));
+      }
+      else{
+        Point tl = Point(hCircledetections[i].x - hCircledetections[i].z, hCircledetections[i].y - hCircledetections[i].z);
+        Point br = Point(hCircledetections[i].x + hCircledetections[i].z, hCircledetections[i].y + hCircledetections[i].z);
+        allDetections.push_back(Rect(tl, br));
       }
     }
-    allDetections.insert(allDetections.end(), hCircledetections.begin(), hCircledetections.end());
-
     /*Mat houghSpaceLines = visualiseHoughLines(thresholded, dir);
     imshow("houghLines", normalise(houghSpaceLines));*/
     imwrite(debugLocation + "scaledOriginal" + to_string(iteration) + ".jpg", testOriginal);
@@ -115,14 +122,12 @@ int main( int argc, char** argv ){
   }
   //drawHCircleDetections(original, allDetections);
 
-  vector<Rect> boxes = convertToBoxes(allDetections);
-
   if(argc > 2){
     //draw ground truth and Hough Circle detections(tp+fp) altogether on original image
-    verifyDetections(original, boxes, argv[2]);
+    verifyDetections(original, allDetections, argv[2]);
   } else {
     //draw only Hough Circle detections on original image
-    displayHCircleBoundingBoxes(original, boxes);
+    displayHCircleBoundingBoxes(original, allDetections);
   }
 
   imshow("detections", original);
