@@ -77,21 +77,10 @@ int main( int argc, char** argv ){
 
 
     /*calculate hough space circle transformation*/
-    Mat hCircles = houghCircles(thresholded, dir, 20, 200);
+    Mat hCircles = generateHoughSpace(thresholded, dir, 20, 200, 0);
 
-    Mat houghSpaceCircles = visualiseHoughCircles(hCircles, 20, 200);
+    Mat houghSpaceCircles = visualiseHoughSpace(hCircles, 20, 200);
     imwrite(debugLocation + "houghCircles" + to_string(iteration) + ".jpg", normalise(houghSpaceCircles));
-
-
-
-    //
-    // /*calculate hough space line transformation in a circle-wise way*/
-    // Mat hLines2 = houghLines2(thresholded, dir, 0, 60);
-    //
-    // Mat houghSpaceLines2 = visualiseHoughLines2(hLines2, 0, 60);
-    // imshow("houghLines2", normalise(houghSpaceLines2));
-    //
-    //
 
     vector<Point3i> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, testOriginal);
 
@@ -111,8 +100,6 @@ int main( int argc, char** argv ){
         allDetections.push_back(Rect(tl, br));
       }
     }
-    /*Mat houghSpaceLines = visualiseHoughLines(thresholded, dir);
-    imshow("houghLines", normalise(houghSpaceLines));*/
     imwrite(debugLocation + "scaledOriginal" + to_string(iteration) + ".jpg", testOriginal);
     iteration++;
 
@@ -120,7 +107,6 @@ int main( int argc, char** argv ){
   for(int i = 0; i < allDetections.size(); i++){
     cout<<allDetections[i]<<endl;
   }
-  //drawHCircleDetections(original, allDetections);
 
   if(argc > 2){
     //draw ground truth and Hough Circle detections(tp+fp) altogether on original image
