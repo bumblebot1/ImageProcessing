@@ -41,7 +41,7 @@ int main( int argc, char** argv ){
   Mat maskDy = Mat(3, 3, CV_8SC1, maskY);
 
   vector<Rect> allDetections;
-  vector<float> scalingFactors = {1, 0.5};
+  vector<float> scalingFactors = {1};//, 0.5};
   cout<<scalingFactors.size()<<endl;
 
   int iteration = 0;
@@ -77,12 +77,12 @@ int main( int argc, char** argv ){
 
 
     /*calculate hough space circle transformation*/
-    Mat hCircles = generateHoughSpace(thresholded, dir, 20, 200, 0);
+    Mat hCircles = generateHoughSpace(thresholded, dir, 0, 50, (90 * M_PI) / 180);
 
-    Mat houghSpaceCircles = visualiseHoughSpace(hCircles, 20, 200);
+    Mat houghSpaceCircles = visualiseHoughSpace(hCircles, 0, 50);
     imwrite(debugLocation + "houghCircles" + to_string(iteration) + ".jpg", normalise(houghSpaceCircles));
 
-    vector<Point3i> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, testOriginal);
+    vector<Point3i> hCircledetections = detectLinesIntersection(normalise(houghSpaceCircles), hCircles, 165, testOriginal, dir, thresholded);
 
     for(int i = 0; i < hCircledetections.size(); i++){
       if(factor < 1){
