@@ -22,4 +22,4 @@ $(DETECTORTEST): $(DETECTORTEST).cpp
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
 clean:
-	rm -f $(FACE) $(DART) $(VIOLATEST)
+	rm -f $(FACE) $(DART) $(VIOLATEST) $(DETECTORTEST)
