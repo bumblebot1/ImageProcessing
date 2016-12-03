@@ -1,7 +1,9 @@
 face
 dartboard
 overallViola
+overallDetector
 violaDetections/
+houghDetections/
 debugOutput/
 detected.jpg
 negatives/
