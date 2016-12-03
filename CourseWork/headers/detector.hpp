@@ -116,7 +116,7 @@ vector<Rect> scaledCircleDetector(Mat greyImage, Mat colorImage, float factor){
   Mat houghSpaceCircles = visualiseHoughSpace(hCircles, 20, 200);
   imwrite(debugLocation + "HoughSpace_Circle.jpg", normalise(houghSpaceCircles));
 
-  vector<Point3i> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 220, testColor);
+  vector<Point3i> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 230, testColor);
 
   for(int i = 0; i < hCircledetections.size(); i++){
     hCircledetections[i].y = (int) (hCircledetections[i].y / factor);

@@ -30,10 +30,20 @@ int main( int argc, char** argv ){
   }
 
   vector<Rect> allDetections = intersectionDetector(greyImage, colorImage);
-  //vector<Rect> circleDetections = scaledCircleDetector(greyImage, colorImage, 0.5);
-  //imshow("sharpened", strengthenEdges(greyImage));
+  vector<Rect> circleDetections = scaledCircleDetector(greyImage, colorImage, 0.5);
+  for(int i = 0; i < allDetections.size(); i++){
+    for(int j = 0; j < circleDetections.size(); j++){
+      if(checkOverlap(allDetections[i], circleDetections[j])){
+        circleDetections.erase(circleDetections.begin() + j);
+        cout<<"i:"<<i<<" "<<"j:"<<j<<endl;
+        j--;
+      }
+    }
+  }
+  if(circleDetections.size() != 0){
+    allDetections.insert(allDetections.end(), circleDetections.begin(), circleDetections.end());
+  }
   cout<<"Number of detections"<<allDetections.size()<<endl;
-  //allDetections.insert(allDetections.end(), circleDetections.begin(), circleDetections.end());
 
   if(argc > 2){
     //draw ground truth and Hough Circle detections(tp+fp) altogether on original image

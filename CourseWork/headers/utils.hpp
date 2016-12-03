@@ -78,4 +78,16 @@ Mat strengthenEdges(Mat original){
   return sharpEdges;
 }
 
+bool checkOverlap(Rect first, Rect second){
+  Point resultT, resultB;
+  resultT.x = max(first.tl().x, second.tl().x);
+  resultT.y = max(first.tl().y, second.tl().y);
+
+  resultB.x = min(first.br().x, second.br().x);
+  resultB.y = min(first.br().y, second.br().y);
+  long resultArea = (resultB.y - resultT.y)*(resultB.x - resultT.x);
+  cout<<resultArea<<" Intersection"<<first<<" "<<second<<endl;
+  return resultArea > 0;
+}
+
 #endif
