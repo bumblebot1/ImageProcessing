@@ -31,6 +31,8 @@ int main( int argc, char** argv ){
 
   //vector<Rect> allDetections = intersectionDetector(greyImage, colorImage);
   vector<Rect> circleDetections = scaledCircleDetector(greyImage, colorImage, 0.5);
+  //imshow("sharpened", strengthenEdges(greyImage));
+  cout<<"Number of detections"<<allDetections.size()<<endl;
   //allDetections.insert(allDetections.end(), circleDetections.begin(), circleDetections.end());
 
   if(argc > 2){

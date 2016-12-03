@@ -70,4 +70,12 @@ vector<Rect> convertToBoxes(vector<Point3i> pointRepresentation){
   return boundingBoxes;
 }
 
+Mat strengthenEdges(Mat original){
+  Mat blurred; /*used to hold the blurred image used in sharpening*/
+  Mat sharpEdges;
+  GaussianBlur(original, blurred, cv::Size(0, 0), 3);
+  addWeighted(original, 1.5, blurred, -0.5, 0, sharpEdges);
+  return sharpEdges;
+}
+
 #endif

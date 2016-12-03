@@ -23,11 +23,11 @@ bool is_TP(Rect groundTruth, Rect detected)
     || max(detected.tl().y, groundTruth.tl().y) > min(detected.br().y, groundTruth.br().y) )
     return false;
   //cout<<"Detection Area:"<<detectedArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
-  if ( detectedArea >= groundTruthArea * 2.5 )
+  if ( detectedArea >= groundTruthArea * 2.0 )
     return false;
 
   //cout<<"Intersection Area:"<<resultArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
-  if ( resultArea * 2.5 >= groundTruthArea )
+  if ( resultArea * 2.0 >= groundTruthArea )
     return true;
 
   return false;
