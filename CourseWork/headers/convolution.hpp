@@ -1,14 +1,10 @@
-#ifndef CONV_H
-#define CONV_H
-
-#include "opencv/cv.h"        //you may need to
-#include "opencv/highgui.h"   //adjust import locations
-#include "opencv/cxcore.h"    //depending on your machine setup
+#ifndef CONV_HPP
+#define CONV_HPP
 
 using namespace cv;
 
 Mat convolution3D(Mat image, Mat mask){
-  Mat grad = Mat(image.rows, image.cols, CV_32FC1);
+  Mat grad = Mat(image.rows, image.cols, CV_32FC1, Scalar(0));
   for(int y = 1; y < image.rows - 1; y++) {
       for(int x = 1; x < image.cols - 1; x++) {
           float pixel = 0;
@@ -24,7 +20,7 @@ Mat convolution3D(Mat image, Mat mask){
 }
 
 Mat convolution5D(Mat image, Mat mask){
-  Mat grad = Mat(image.rows, image.cols, CV_32FC1);
+  Mat grad = Mat(image.rows, image.cols, CV_32FC1, Scalar(0));
   for(int y = 2; y < image.rows - 2; y++) {
       for(int x = 2; x < image.cols - 2; x++) {
           float pixel = 0;

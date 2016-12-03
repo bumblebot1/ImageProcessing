@@ -1,7 +1,5 @@
-#ifndef DETECT_H
-#define DETECT_H
-
-#include "vector"
+#ifndef DETECT_HPP
+#define DETECT_HPP
 
 using namespace cv;
 using namespace std;
@@ -108,7 +106,7 @@ vector<Point3i> detectLinesIntersection(Mat houghSpace, Mat H, int threshold, Ma
               int y0 = (center.y+a) + dist*std::sin( orientation.at<float>(center.y+a, center.x+b) + (90*M_PI / 180) );
               int x0 = (center.x+b) + dist*std::cos( orientation.at<float>(center.y+a, center.x+b) + (90*M_PI / 180) );
 
-              cout<<"("<<center.x<<","<<center.y<<") - ("<<x0<<","<<y0<<")"<<endl;
+              //cout<<"("<<center.x<<","<<center.y<<") - ("<<x0<<","<<y0<<")"<<endl;
 
               if(x0 == center.x && y0 == center.y && dist > distMax){
                 distMax = dist;

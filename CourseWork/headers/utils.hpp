@@ -1,9 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
-
-#include "opencv/cv.h"        //you may need to
-#include "opencv/highgui.h"   //adjust import locations
-#include "opencv/cxcore.h"    //depending on your machine setup
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
 using namespace cv;
 

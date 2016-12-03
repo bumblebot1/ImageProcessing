@@ -1,10 +1,7 @@
-#ifndef ACCURACY_H
-#define ACCURACY_H
+#ifndef ACCURACY_HPP
+#define ACCURACY_HPP
 
-#include "iostream"
 #include "fstream"
-#include "vector"
-#include "opencv2/opencv.hpp"
 
 using namespace cv;
 using namespace std;
@@ -50,7 +47,7 @@ vector<Rect> readFile(const string& fileName){
   }
 
   for( auto rect : groundTruth ){
-    cout<<rect.tl()<<" "<<rect.br()<<endl;
+    cout<<"Ground truth dartboard:"<<rect.tl()<<" "<<rect.br()<<endl;
   }
 
   return groundTruth;

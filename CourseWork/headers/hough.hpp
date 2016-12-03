@@ -1,9 +1,5 @@
-#ifndef HOUGH_H
-#define HOUGH_H
-
-#include "opencv/cv.h"        //you may need to
-#include "opencv/highgui.h"   //adjust import locations
-#include "opencv/cxcore.h"    //depending on your machine setup
+#ifndef HOUGH_HPP
+#define HOUGH_HPP
 
 using namespace cv;
 using namespace std;

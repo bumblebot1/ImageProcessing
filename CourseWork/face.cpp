@@ -15,7 +15,7 @@
 #include "iostream"
 #include "sstream"
 #include "stdio.h"
-#include "headers/processDetections.h"
+#include "headers/processDetections.hpp"
 
 using namespace std;
 using namespace cv;
