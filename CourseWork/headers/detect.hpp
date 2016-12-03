@@ -59,6 +59,8 @@ void drawHCircleDetections(Mat frame, vector<Point3i> hCircleDetections){
     int radius = detected.z;
     Point tl = Point(detected.x - radius, detected.y - radius);
     Point br = Point(detected.x + radius, detected.y + radius);
+
+    //draw detections with light blue on original frame
     rectangle(frame, tl, br, Scalar( 255, 255, 0 ), 2);
   }
 }
@@ -80,7 +82,8 @@ vector<Point3i> detectLinesIntersection(Mat houghSpace, Mat H, int threshold, Ma
         for(int b = 0; b < windowSize && x + b < houghSpace.cols; b++)
         {
           if(houghSpace.at<uchar>(y + a, x + b) >= threshold && houghSpace.at<uchar>(y + a, x + b) > max
-            && y + a < houghSpace.rows && x + b < houghSpace.cols)
+            && y + a < houghSpace.rows && x + b < houghSpace.cols 
+            && x + b != 0 && y + a != 0)
           {
             center = Point(x + b, y + a);
             max = houghSpace.at<uchar>(y + a, x + b);

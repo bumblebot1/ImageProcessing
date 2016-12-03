@@ -58,7 +58,8 @@ tuple<double, double, double> calculateRates(Mat frame, vector<Rect> groundTruth
         break;
       }
       else{
-        rectangle(frame, detection.tl(), detection.br(), Scalar( 0, 255, 0), 2);
+        //draw the false positive with green on the frame
+        //rectangle(frame, detection.tl(), detection.br(), Scalar( 0, 255, 0), 2);
       }
     }
 

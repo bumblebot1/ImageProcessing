@@ -18,7 +18,7 @@ char maskY[9] = { -1, -2, -1, 0, 0, 0, 1, 2, 1};
 Mat maskDy = Mat(3, 3, CV_8SC1, maskY);
 
 vector<Rect> intersectionDetector(Mat greyImage, Mat colorImage){
-  vector<Rect> boxes;
+  //vector<Rect> boxes;
   /*calculate gradient in x direction*/
   Mat grad_x = convolution3D(greyImage, maskDx);
   Mat normalisedGrad_x = normalise(grad_x);
@@ -50,13 +50,15 @@ vector<Rect> intersectionDetector(Mat greyImage, Mat colorImage){
 
   vector<Point3i> detections = detectLinesIntersection(normalise(houghSpace), hSpace, 165, colorImage, dir, thresholded);
 
-  for(int i = 0; i < detections.size(); i++){
+  /*for(int i = 0; i < detections.size(); i++){
     Point tl = Point(detections[i].x - detections[i].z, detections[i].y - detections[i].z);
     Point br = Point(detections[i].x + detections[i].z, detections[i].y + detections[i].z);
     boxes.push_back(Rect(tl, br));
-  }
+  }*/
+
   imwrite(debugLocation + "intersectionOriginal.jpg", colorImage);
 
+  vector<Rect> boxes = convertToBoxes(detections);
   for(int i = 0; i < boxes.size(); i++){
     cout<<"Detection: "<<boxes[i]<<endl;
   }
@@ -82,6 +84,7 @@ vector<Rect> scaledCircleDetector(Mat greyImage, Mat colorImage, float factor){
   Mat testGrey = scaleHeight(greyImage, factor);
   Mat testColor = scaleHeight(colorImage, factor);
   Mat sharper;
+  vector<Rect> boxes;
 
   /*calculate gradient in x direction*/
   Mat grad_x = convolution3D(testGrey, maskDx);
@@ -117,15 +120,20 @@ vector<Rect> scaledCircleDetector(Mat greyImage, Mat colorImage, float factor){
 
   for(int i = 0; i < hCircledetections.size(); i++){
     hCircledetections[i].y = (int) (hCircledetections[i].y / factor);
-    hCircledetections[i].z = (int) (hCircledetections[i].z / factor);
+    //hCircledetections[i].z = (int) (hCircledetections[i].z / factor);
+    int yRadius = (int) (hCircledetections[i].z / factor);
+    int xRadius = (int) (hCircledetections[i].z);
+    Point tl = Point(hCircledetections[i].x - xRadius, hCircledetections[i].y - yRadius);
+    Point br = Point(hCircledetections[i].x + xRadius, hCircledetections[i].y + yRadius);
+    boxes.push_back(Rect(tl,br));
   }
 
   imwrite(debugLocation + "ScaledOriginal_Circle.jpg", testColor);
 
-  vector<Rect> boxes = convertToBoxes(hCircledetections);
+  /*vector<Rect> boxes = convertToBoxes(hCircledetections);
   for(int i = 0; i < boxes.size(); i++){
     cout<<"Detection: "<<boxes[i]<<endl;
-  }
+  }*/
 
   /*free memory from Matrices*/
   testColor.release();

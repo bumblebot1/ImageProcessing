@@ -29,15 +29,16 @@ int main( int argc, char** argv ){
     return -1;
   }
 
-  vector<Rect> allDetections = intersectionDetector(greyImage, colorImage);
-  //vector<Rect> circleDetections = scaledCircleDetector(greyImage, colorImage, 0.5);
+  //vector<Rect> allDetections = intersectionDetector(greyImage, colorImage);
+  vector<Rect> circleDetections = scaledCircleDetector(greyImage, colorImage, 0.5);
   //allDetections.insert(allDetections.end(), circleDetections.begin(), circleDetections.end());
+
   if(argc > 2){
     //draw ground truth and Hough Circle detections(tp+fp) altogether on original image
-    verifyDetections(colorImage, allDetections, argv[2]);
+    verifyDetections(colorImage, circleDetections, argv[2]);
   } else {
     //draw only Hough Circle detections on original image
-    displayHCircleBoundingBoxes(colorImage, allDetections);
+    displayHCircleBoundingBoxes(colorImage, circleDetections);
   }
 
   imshow("detections", colorImage);
