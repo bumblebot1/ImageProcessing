@@ -50,12 +50,6 @@ vector<Rect> intersectionDetector(Mat greyImage, Mat colorImage){
 
   vector<Point3i> detections = detectLinesIntersection(normalise(houghSpace), hSpace, 165, colorImage, dir, thresholded);
 
-  /*for(int i = 0; i < detections.size(); i++){
-    Point tl = Point(detections[i].x - detections[i].z, detections[i].y - detections[i].z);
-    Point br = Point(detections[i].x + detections[i].z, detections[i].y + detections[i].z);
-    boxes.push_back(Rect(tl, br));
-  }*/
-
   imwrite(debugLocation + "intersectionOriginal.jpg", colorImage);
 
   vector<Rect> boxes = convertToBoxes(detections);
@@ -80,7 +74,7 @@ vector<Rect> intersectionDetector(Mat greyImage, Mat colorImage){
   return boxes;
 }
 
-vector<Rect> scaledCircleDetector(Mat greyImage, Mat colorImage, float factor){
+vector<Rect> scaledCircleDetector(Mat greyImage, Mat colorImage, int circleThreshold, float factor){
   Mat testGrey = scaleHeight(greyImage, factor);
   Mat testColor = scaleHeight(colorImage, factor);
   Mat sharper;
@@ -116,7 +110,7 @@ vector<Rect> scaledCircleDetector(Mat greyImage, Mat colorImage, float factor){
   Mat houghSpaceCircles = visualiseHoughSpace(hCircles, 20, 200);
   imwrite(debugLocation + "HoughSpace_Circle.jpg", normalise(houghSpaceCircles));
 
-  vector<Point3i> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, 230, testColor);
+  vector<Point3i> hCircledetections = detectCircles(normalise(houghSpaceCircles), hCircles, circleThreshold, testColor);
 
   for(int i = 0; i < hCircledetections.size(); i++){
     hCircledetections[i].y = (int) (hCircledetections[i].y / factor);
@@ -129,11 +123,6 @@ vector<Rect> scaledCircleDetector(Mat greyImage, Mat colorImage, float factor){
   }
 
   imwrite(debugLocation + "ScaledOriginal_Circle.jpg", testColor);
-
-  /*vector<Rect> boxes = convertToBoxes(hCircledetections);
-  for(int i = 0; i < boxes.size(); i++){
-    cout<<"Detection: "<<boxes[i]<<endl;
-  }*/
 
   /*free memory from Matrices*/
   testColor.release();

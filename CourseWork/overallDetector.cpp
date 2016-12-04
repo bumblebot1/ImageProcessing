@@ -11,8 +11,7 @@
 
 /*Other headers*/
 #include "headers/processDetections.hpp"
-#include "headers/detector.hpp"
-
+#include "headers/part4.hpp"
 String imagesPath = "Test Images/dart";
 String groundTruthPath = "groundTruth/image";
 
@@ -41,20 +40,8 @@ int main( int argc, char** argv ){
       return -1;
     }
 
-    vector<Rect> allDetections = intersectionDetector(greyImage, colorImage);
-    vector<Rect> circleDetections = scaledCircleDetector(greyImage, colorImage, 0.5);
-    for(int i = 0; i < allDetections.size(); i++){
-      for(int j = 0; j < circleDetections.size(); j++){
-        if(checkOverlap(allDetections[i], circleDetections[j])){
-          circleDetections.erase(circleDetections.begin() + j);
-          cout<<"i:"<<i<<" "<<"j:"<<j<<endl;
-          j--;
-        }
-      }
-    }
-    if(circleDetections.size() != 0){
-      allDetections.insert(allDetections.end(), circleDetections.begin(), circleDetections.end());
-    }
+    vector<Rect> allDetections = detectAndReturnBoxes(greyImage, colorImage);
+
     cout<<"Number of detections"<<allDetections.size()<<endl;
 
     //calculate tpr, fpr, fnr and f1 score for each detection
