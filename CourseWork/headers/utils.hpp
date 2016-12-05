@@ -86,7 +86,6 @@ bool checkOverlap(Rect first, Rect second){
   resultB.x = min(first.br().x, second.br().x);
   resultB.y = min(first.br().y, second.br().y);
   long resultArea = (resultB.y - resultT.y)*(resultB.x - resultT.x);
-  cout<<resultArea<<" Intersection"<<first<<" "<<second<<endl;
   return resultArea > 0;
 }
 

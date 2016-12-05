@@ -22,11 +22,9 @@ bool is_TP(Rect groundTruth, Rect detected)
   if ( max(detected.tl().x, groundTruth.tl().x) > min(detected.br().x, groundTruth.br().x)
     || max(detected.tl().y, groundTruth.tl().y) > min(detected.br().y, groundTruth.br().y) )
     return false;
-  //cout<<"Detection Area:"<<detectedArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
   if ( detectedArea >= groundTruthArea * 2.0 )
     return false;
 
-  //cout<<"Intersection Area:"<<resultArea<<" Ground Truth Area:"<<groundTruthArea<<endl;
   if ( resultArea * 2.0 >= groundTruthArea )
     return true;
 
@@ -44,10 +42,6 @@ vector<Rect> readFile(const string& fileName){
     Point bottom = Point(c,d);
     Rect rectangle = Rect(top, bottom);
     groundTruth.push_back(rectangle);
-  }
-
-  for( auto rect : groundTruth ){
-    cout<<"Ground truth dartboard:"<<rect.tl()<<" "<<rect.br()<<endl;
   }
 
   return groundTruth;

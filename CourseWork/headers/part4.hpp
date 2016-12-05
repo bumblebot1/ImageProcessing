@@ -13,7 +13,6 @@ vector<Rect> detectAndReturnBoxes(Mat greyImage, Mat colorImage){
     for(int j = 0; j < circleDetections.size(); j++){
       if(checkOverlap(allDetections[i], circleDetections[j])){
         circleDetections.erase(circleDetections.begin() + j);
-        cout<<"i:"<<i<<" "<<"j:"<<j<<endl;
         j--;
       }
     }

@@ -53,9 +53,6 @@ vector<Rect> intersectionDetector(Mat greyImage, Mat colorImage){
   imwrite(debugLocation + "intersectionOriginal.jpg", colorImage);
 
   vector<Rect> boxes = convertToBoxes(detections);
-  for(int i = 0; i < boxes.size(); i++){
-    cout<<"Detection: "<<boxes[i]<<endl;
-  }
 
   /*free memory from Matrices*/
   grad_x.release();
